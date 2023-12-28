@@ -1,33 +1,38 @@
 package cmd
 
 import (
-    "fmt"
-    "os"
-    "time"
+	"fmt"
+	"os"
+	"time"
 
-    "github.com/MarlonCorreia/ephemail/internal/clipb"
-    email "github.com/MarlonCorreia/ephemail/internal/email"
-    "github.com/charmbracelet/bubbles/spinner"
-    "github.com/charmbracelet/bubbles/stopwatch"
-    "github.com/charmbracelet/bubbles/viewport"
-    tea "github.com/charmbracelet/bubbletea"
-    "github.com/charmbracelet/lipgloss"
+	"github.com/MarlonCorreia/ephemail/internal/clipb"
+	email "github.com/MarlonCorreia/ephemail/internal/email"
+	"github.com/charmbracelet/bubbles/spinner"
+	"github.com/charmbracelet/bubbles/stopwatch"
+	"github.com/charmbracelet/bubbles/viewport"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 type model struct {
-    emailClient    email.EmailModel
-    cursor         int
-    selected       *email.Message
-    viewport       viewport.Model
-    viewPortReady  bool
-    stopwatch      stopwatch.Model
-    listLastUpdate time.Time
-    spinner        spinner.Model
+	emailClient    email.EmailModel
+	cursor         int
+	selected       *email.Message
+	viewport       viewport.Model
+	viewPortReady  bool
+	stopwatch      stopwatch.Model
+	listLastUpdate time.Time
+	spinner        spinner.Model
+	error          string
 }
 
 func initialModel() model {
+	error := ""
 	client := email.EmailModel{}
-	client.BuildNewEmail()
+	err := client.BuildNewEmail()
+	if err != nil {
+		error = newEmailAdressErr
+	}
 	newSpinner := spinner.New()
 	newSpinner.Spinner = spinner.Line
 	newSpinner.Style = highlightStyle
@@ -39,6 +44,7 @@ func initialModel() model {
 		viewPortReady: false,
 		stopwatch:     stopwatch.NewWithInterval(time.Millisecond),
 		spinner:       newSpinner,
+		error:         error,
 	}
 }
 
@@ -109,15 +115,29 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "c":
 			clipb.SendToClipBoard(m.emailClient.GetEmail())
 
-		case "r":
-			m.emailClient.UpdateEmailMessages()
+		case "n":
+			err := m.emailClient.BuildNewEmail()
+			if err != nil {
+				m.error = newEmailAdressErr
+			} else {
+				m.error = ""
+			}
+			m.emailClient.Messages = []*email.Message{}
 		}
 	}
 
 	if m.stopwatch.Elapsed().Seconds() >= 5 && m.selected == nil {
 		cmd = m.stopwatch.Reset()
-		m.emailClient.UpdateEmailMessages()
 		cmds = append(cmds, cmd)
+
+		if m.error != newEmailAdressErr {
+			err := m.emailClient.UpdateEmailMessages()
+			if err != nil {
+				m.error = fetchNewEmailsErr
+			} else {
+				m.error = ""
+			}
+		}
 	}
 
 	m.viewport, cmd = m.viewport.Update(msg)
@@ -131,7 +151,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) View() string {
 	s := ""
 
-	if m.selected == nil {
+	if m.error != "" {
+		s += errorStateStyle(m.error)
+	} else if m.selected == nil {
 		s += m.listView()
 	} else {
 		s += m.viewport.View()

@@ -18,4 +18,6 @@ var (
 		b.Left = "┤"
 		return titleStyle.Copy().BorderStyle(b)
 	}()
+
+	errorStateStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#FF0000")).Render
 )
