@@ -108,11 +108,6 @@ func (msg *Message) DisplayCompleteEmail() string {
 	return fmt.Sprintf(emailBody, msg.Subject, msg.From, msg.Date, msg.Content.TextBody)
 }
 
-func (m *EmailModel) MockEmail() {
-	m.User = "0jh0r9c"
-	m.Domain = "laafd.com"
-}
-
 func (m *EmailModel) BuildNewEmail() error {
 	url := baseEmailAPI + "?action=genRandomMailbox&count=1"
 	res, err := http.Get(url)
