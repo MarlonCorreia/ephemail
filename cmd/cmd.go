@@ -1,24 +1,24 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
-	"strings"
-	"time"
+    "fmt"
+    "os"
+    "strings"
+    "time"
 
-	"github.com/MarlonCorreia/ephemail/internal/clipb"
-	email "github.com/MarlonCorreia/ephemail/internal/email"
-	"github.com/MarlonCorreia/ephemail/utils"
-	"github.com/charmbracelet/bubbles/spinner"
-	"github.com/charmbracelet/bubbles/stopwatch"
-	"github.com/charmbracelet/bubbles/viewport"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+    "github.com/MarlonCorreia/ephemail/internal/clipb"
+    email "github.com/MarlonCorreia/ephemail/internal/email"
+    "github.com/MarlonCorreia/ephemail/utils"
+    "github.com/charmbracelet/bubbles/spinner"
+    "github.com/charmbracelet/bubbles/stopwatch"
+    "github.com/charmbracelet/bubbles/viewport"
+    tea "github.com/charmbracelet/bubbletea"
+    "github.com/charmbracelet/lipgloss"
 )
 
 var(
     fadedTextStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("241")).Render
-   
+
     highlightStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#eeb902"))
 
     titleStyle = func() lipgloss.Style {
@@ -28,10 +28,10 @@ var(
     }()
 
     infoStyle = func() lipgloss.Style {
-		b := lipgloss.RoundedBorder()
-		b.Left = "┤"
-		return titleStyle.Copy().BorderStyle(b)
-	}()
+        b := lipgloss.RoundedBorder()
+        b.Left = "┤"
+        return titleStyle.Copy().BorderStyle(b)
+    }()
 
 ) 
 type model struct {
@@ -52,14 +52,14 @@ func initialModel() model {
     newSpinner.Spinner = spinner.Line
     newSpinner.Style = highlightStyle 
 
-	return model{
+    return model{
         emailClient: client,
-		selected: nil,
+        selected: nil,
         viewport: viewport.New(100, 20),
         viewPortReady: false,
         stopwatch: stopwatch.NewWithInterval(time.Millisecond),
         spinner: newSpinner,
-	}
+    }
 }
 
 func (m model) Init() tea.Cmd {
@@ -82,23 +82,23 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     )
 
     switch msg := msg.(type) {
-    
+
     case spinner.TickMsg:
-		m.spinner, cmd = m.spinner.Update(msg)
+        m.spinner, cmd = m.spinner.Update(msg)
         cmds = append(cmds, cmd)
 
     case tea.WindowSizeMsg:
- 		headerHeight := lipgloss.Height(m.headerView())
-		footerHeight := lipgloss.Height(m.footerView())
-		verticalMarginHeight := headerHeight + footerHeight
+        headerHeight := lipgloss.Height(m.headerView())
+        footerHeight := lipgloss.Height(m.footerView())
+        verticalMarginHeight := headerHeight + footerHeight
 
-		if !m.viewPortReady {
-			m.viewport.YPosition = headerHeight
-			m.viewPortReady = true
-		} else {
-			m.viewport.Width = msg.Width
-			m.viewport.Height = msg.Height - verticalMarginHeight
-		}
+        if !m.viewPortReady {
+            m.viewport.YPosition = headerHeight
+            m.viewPortReady = true
+        } else {
+            m.viewport.Width = msg.Width
+            m.viewport.Height = msg.Height - verticalMarginHeight
+        }
 
     case tea.KeyMsg:
         switch msg.String() {
@@ -128,7 +128,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
         case "c":
             clipb.SendToClipBoard(m.emailClient.GetEmail())
-        
+
         case "r":
             m.emailClient.UpdateEmailMessages()
         }
@@ -149,22 +149,22 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) helpView() string {
-	if m.selected != nil {
+    if m.selected != nil {
         return fadedTextStyle("Up [↑,k] Down [↓,j] Back [b]\n")
     }
     return fadedTextStyle("Up [↑,k] Down [↓,j] Select [↵] Quit [q] Copy Email Adress [c]\n")
 }
 
 func (m model) headerView() string {
-	title := titleStyle.Render(fmt.Sprintf("EphEmail - %s", highlightStyle.Render(m.emailClient.GetEmail())))
-	line := strings.Repeat("─", utils.MaxInt(0, m.viewport.Width-lipgloss.Width(title)))
-	return lipgloss.JoinHorizontal(lipgloss.Center, title, line)
+    title := titleStyle.Render(fmt.Sprintf("EphEmail - %s", highlightStyle.Render(m.emailClient.GetEmail())))
+    line := strings.Repeat("─", utils.MaxInt(0, m.viewport.Width-lipgloss.Width(title)))
+    return lipgloss.JoinHorizontal(lipgloss.Center, title, line)
 }
 
 func (m model) footerView() string {
-	info := infoStyle.Render(fmt.Sprintf("%3.f%%", m.viewport.ScrollPercent()*100))
-	line := strings.Repeat("─", utils.MaxInt(0, m.viewport.Width-lipgloss.Width(info)))
-	return lipgloss.JoinHorizontal(lipgloss.Center, line, info)
+    info := infoStyle.Render(fmt.Sprintf("%3.f%%", m.viewport.ScrollPercent()*100))
+    line := strings.Repeat("─", utils.MaxInt(0, m.viewport.Width-lipgloss.Width(info)))
+    return lipgloss.JoinHorizontal(lipgloss.Center, line, info)
 }
 
 func (m model) listView() string {
