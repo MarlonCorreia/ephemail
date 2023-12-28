@@ -12,7 +12,7 @@ func (m model) helpView() string {
 	if m.selected != nil {
 		return fadedTextStyle("Up [↑,k] Down [↓,j] Back [b]\n")
 	}
-	return fadedTextStyle("Up [↑,k] Down [↓,j] Select [↵] Quit [q] Copy Email Adress [c]\n")
+	return fadedTextStyle("Up [↑,k] Down [↓,j] Select [↵] Quit [q] Copy Email Adress [c] New Email Address [n]\n")
 }
 
 func (m model) headerView() string {
