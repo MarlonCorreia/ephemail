@@ -120,7 +120,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.viewport.SetContent("")
 
 		case "c":
-			clipb.SendToClipBoard(m.emailClient.GetEmail())
+			err := clipb.SendToClipBoard(m.emailClient.GetEmail())
+			if err != nil {
+				m.error = copyEmailAddressErr
+			} else if m.error == copyEmailAddressErr {
+				m.error = ""
+			}
 
 		case "n":
 			err := m.emailClient.BuildNewEmail()
