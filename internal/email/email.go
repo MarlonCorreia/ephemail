@@ -46,14 +46,15 @@ func (m *EmailModel) ContainsMessage(id uint) bool {
 }
 
 func (m *EmailModel) AddMessage(msg *Message) {
-	if m.ContainsMessage(msg.Id) == false {
+	if !m.ContainsMessage(msg.Id) {
 		m.GetMessageContent(msg)
 		m.Messages = append(m.Messages, msg)
 	}
 }
 
 func (m *EmailModel) UpdateEmailMessages() error {
-	url := baseEmailAPI + "?action=getMessages&login=" + m.User + "&domain=" + m.Domain
+	url := fmt.Sprintf("%s?action=getMessages&login=%s&domain=%s", baseEmailAPI, m.User, m.Domain)
+
 	res, err := http.Get(url)
 	if err != nil {
 		return err
@@ -76,7 +77,7 @@ func (m *EmailModel) UpdateEmailMessages() error {
 
 func (m *EmailModel) GetMessageContent(msg *Message) error {
 	strId := fmt.Sprint(msg.Id)
-	url := baseEmailAPI + "?action=readMessage&login=" + m.User + "&domain=" + m.Domain + "&id=" + strId
+	url := fmt.Sprintf("%s?action=readMessage&login=%s&domain=%s&id=%s", baseEmailAPI, m.User, m.Domain, strId)
 
 	res, err := http.Get(url)
 	if err != nil {
@@ -109,7 +110,7 @@ func (msg *Message) DisplayCompleteEmail() string {
 }
 
 func (m *EmailModel) BuildNewEmail() error {
-	url := baseEmailAPI + "?action=genRandomMailbox&count=1"
+	url := fmt.Sprintf("%s?action=genRandomMailbox&count=1", baseEmailAPI)
 	res, err := http.Get(url)
 	if err != nil {
 		return err
