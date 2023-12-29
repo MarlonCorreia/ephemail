@@ -28,7 +28,7 @@ func (m model) footerView() string {
 }
 
 func (m model) listView() string {
-	s := ""
+	s := "\n"
 	if len(m.emailClient.Messages) == 0 {
 		s += fmt.Sprintf("\n %s%s%s\n\n", m.spinner.View(), " ", "Waiting Emails")
 	} else {

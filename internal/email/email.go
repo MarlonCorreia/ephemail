@@ -104,7 +104,7 @@ func (msg *Message) DisplayMessage() string {
 }
 
 func (msg *Message) DisplayCompleteEmail() string {
-	emailBody := "Subject: %s\nFrom: %s\nAt: %s\n\n%s"
+	emailBody := "\nSubject: %s\nFrom: %s\nAt: %s\n\n%s"
 	return fmt.Sprintf(emailBody, msg.Subject, msg.From, msg.Date, msg.Content.TextBody)
 }
 

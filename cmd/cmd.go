@@ -76,10 +76,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		headerHeight := lipgloss.Height(m.headerView())
 		footerHeight := lipgloss.Height(m.footerView())
-		verticalMarginHeight := headerHeight + footerHeight
+		helpHeight := lipgloss.Height(m.helpView())
+		verticalMarginHeight := headerHeight + footerHeight + helpHeight
 
 		if !m.viewPortReady {
-			m.viewport.YPosition = headerHeight
+			m.viewport = viewport.New(msg.Width, msg.Height-verticalMarginHeight)
+			m.viewport.YPosition = headerHeight + 1
 			m.viewPortReady = true
 		} else {
 			m.viewport.Width = msg.Width
@@ -159,11 +161,14 @@ func (m model) View() string {
 		s += m.viewport.View()
 	}
 
-	return fmt.Sprintf("%s\n\n%s\n%s\n%s", m.headerView(), s, m.footerView(), m.helpView())
+	return fmt.Sprintf("%s\n%s\n%s\n%s", m.headerView(), s, m.footerView(), m.helpView())
 }
 
 func InitCmd() {
-	p := tea.NewProgram(initialModel())
+	p := tea.NewProgram(
+		initialModel(),
+		tea.WithAltScreen(),
+	)
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)
 		os.Exit(1)
