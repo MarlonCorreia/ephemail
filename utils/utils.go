@@ -23,3 +23,11 @@ func WriteFile(fileName string, content string) error {
 
 	return nil
 }
+
+func DeleteFile(fileName string) error {
+	err := os.Remove(fileName)
+	if err != nil {
+		return err
+	}
+	return nil
+}
