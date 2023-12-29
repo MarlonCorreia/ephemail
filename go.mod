@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/charmbracelet/bubbles v0.17.1
 	github.com/charmbracelet/lipgloss v0.9.1
+	github.com/k3a/html2text v1.2.1
 )
 
 require (

@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+
+	"github.com/k3a/html2text"
 )
 
 var (
@@ -96,6 +98,7 @@ func (m *EmailModel) GetMessageContent(msg *Message) error {
 	}
 
 	msg.Content = body
+	msg.Content.TextBody = html2text.HTML2Text(body.Body)
 
 	return nil
 }
