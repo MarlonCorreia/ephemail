@@ -7,6 +7,7 @@ import (
 
 	"github.com/MarlonCorreia/ephemail/internal/clipb"
 	email "github.com/MarlonCorreia/ephemail/internal/email"
+	"github.com/MarlonCorreia/ephemail/utils"
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/stopwatch"
 	"github.com/charmbracelet/bubbles/viewport"
@@ -129,6 +130,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.error = ""
 			}
 			m.emailClient.Messages = []*email.Message{}
+
+		case "e":
+			if m.selected != nil {
+				htmlContent := m.selected.Content.HtmlBody
+				err := utils.WriteFile("email.html", htmlContent)
+				if err != nil {
+					m.error = writeEmailToFileErr
+				}
+			}
 		}
 	}
 

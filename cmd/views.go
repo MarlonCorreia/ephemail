@@ -10,7 +10,7 @@ import (
 
 func (m model) helpView() string {
 	if m.selected != nil {
-		return fadedTextStyle("Up [↑,k] Down [↓,j] Back [b]\n")
+		return fadedTextStyle("Up [↑,k] Down [↓,j] Back [b] Download HTML Email [e]\n")
 	}
 	return fadedTextStyle("Up [↑,k] Down [↓,j] Select [↵] Quit [q] Copy Email Adress [c] New Email Address [n]\n")
 }
