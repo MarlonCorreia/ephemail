@@ -22,7 +22,6 @@ type model struct {
 	viewport       viewport.Model
 	viewPortReady  bool
 	stopwatch      stopwatch.Model
-	listLastUpdate time.Time
 	spinner        spinner.Model
 	error          string
 }
