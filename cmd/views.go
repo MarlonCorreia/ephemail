@@ -43,3 +43,9 @@ func (m model) listView() string {
 	}
 	return s
 }
+
+func (m model) messageContentView() string {
+	content := m.selected.DisplayCompleteEmail()
+	style := lipgloss.NewStyle().Width(lipgloss.Width(m.headerView()))
+	return style.Render(content)
+}

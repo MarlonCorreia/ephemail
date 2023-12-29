@@ -111,7 +111,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "enter", " ":
 			if m.cursor >= 0 || m.cursor < len(m.emailClient.Messages) {
 				m.selected = m.emailClient.Messages[m.cursor]
-				m.viewport.SetContent(m.selected.DisplayCompleteEmail())
+				m.viewport.SetContent(m.messageContentView())
 			}
 
 		case "b":
