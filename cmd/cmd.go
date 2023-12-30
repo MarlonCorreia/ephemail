@@ -16,14 +16,15 @@ import (
 )
 
 type model struct {
-	emailClient    email.EmailModel
-	cursor         int
-	selected       *email.Message
-	viewport       viewport.Model
-	viewPortReady  bool
-	stopwatch      stopwatch.Model
-	spinner        spinner.Model
-	error          string
+	emailClient   email.EmailModel
+	cursor        int
+	selected      *email.Message
+	attView       bool
+	viewport      viewport.Model
+	viewPortReady bool
+	stopwatch     stopwatch.Model
+	spinner       spinner.Model
+	error         string
 }
 
 func initialModel() model {
@@ -45,6 +46,7 @@ func initialModel() model {
 		stopwatch:     stopwatch.NewWithInterval(time.Millisecond),
 		spinner:       newSpinner,
 		error:         error,
+		attView:       false,
 	}
 }
 
@@ -95,7 +97,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 
 		case "up", "k":
-			if m.selected == nil {
+			if m.selected == nil || m.attView {
 				if m.cursor > 0 {
 					m.cursor--
 				}
@@ -104,6 +106,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "down", "j":
 			if m.selected == nil {
 				if m.cursor < len(m.emailClient.Messages)-1 {
+					m.cursor++
+				}
+			} else if m.attView {
+				if m.cursor < len(m.selected.Content.Attachments)-1 {
 					m.cursor++
 				}
 			}
@@ -115,8 +121,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 		case "b":
-			m.selected = nil
-			m.viewport.SetContent("")
+			if m.attView {
+				m.cursor = 0
+				m.attView = false
+			} else {
+				m.selected = nil
+				m.viewport.SetContent("")
+			}
 
 		case "c":
 			err := clipb.SendToClipBoard(m.emailClient.GetEmail())
@@ -135,13 +146,27 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			m.emailClient.Messages = []*email.Message{}
 
-		case "e":
+		case "d":
 			if m.selected != nil {
-				htmlContent := m.selected.Content.HtmlBody
-				err := utils.WriteFile("email.html", htmlContent)
-				if err != nil {
-					m.error = writeEmailToFileErr
+				if m.attView {
+					att := m.selected.Content.Attachments[m.cursor]
+					err := m.emailClient.DownloadAttachment(m.selected, att)
+					if err != nil {
+						m.error = downloadAttchmentErr
+					}
+				} else {
+					htmlContent := m.selected.Content.HtmlBody
+					err := utils.WriteFile("email.html", htmlContent)
+					if err != nil {
+						m.error = writeEmailToFileErr
+					}
 				}
+			}
+
+		case "a":
+			if m.selected != nil {
+				m.cursor = 0
+				m.attView = true
 			}
 		}
 	}
@@ -176,7 +201,11 @@ func (m model) View() string {
 	} else if m.selected == nil {
 		s += m.listView()
 	} else {
-		s += m.viewport.View()
+		if m.attView {
+			s += m.attchmentsView()
+		} else {
+			s += m.viewport.View()
+		}
 	}
 
 	return fmt.Sprintf("%s\n%s\n%s\n%s", m.headerView(), s, m.footerView(), m.helpView())

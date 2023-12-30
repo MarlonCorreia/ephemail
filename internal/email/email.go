@@ -2,11 +2,15 @@ package mail
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"strings"
 
+	"github.com/MarlonCorreia/ephemail/utils"
 	"github.com/k3a/html2text"
 )
 
@@ -14,10 +18,17 @@ var (
 	baseEmailAPI = "https://www.1secmail.com/api/v1/"
 )
 
+type Attachment struct {
+	FileName    string `json:"filename"`
+	ContentType string `json:"contentType"`
+	Size        uint   `json:"size"`
+}
+
 type MessageContent struct {
-	Body     string `json:"body"`
-	TextBody string `json:"textBody"`
-	HtmlBody string `json:"htmlBody"`
+	Body        string       `json:"body"`
+	TextBody    string       `json:"textBody"`
+	HtmlBody    string       `json:"htmlBody"`
+	Attachments []Attachment `json:"attachments"`
 }
 
 type Message struct {
@@ -100,6 +111,41 @@ func (m *EmailModel) GetMessageContent(msg *Message) error {
 	msg.Content = body
 	msg.Content.TextBody = html2text.HTML2Text(body.Body)
 
+	return nil
+}
+
+func (m *EmailModel) DownloadAttachment(msg *Message, att Attachment) error {
+	strId := fmt.Sprint(msg.Id)
+	url := fmt.Sprintf(
+		"%s?action=download&login=%s&domain=%s&id=%s&file=%s",
+		baseEmailAPI,
+		m.User,
+		m.Domain,
+		strId,
+		att.FileName,
+	)
+
+	res, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return errors.New("Unable to download file")
+	}
+
+	out, err := os.Create(att.FileName)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	_, err = io.Copy(out, res.Body)
+	if err != nil {
+		utils.DeleteFile(att.FileName)
+		return err
+	}
 	return nil
 }
 

@@ -10,7 +10,11 @@ import (
 
 func (m model) helpView() string {
 	if m.selected != nil {
-		return fadedTextStyle("Up [↑,k] Down [↓,j] Back [b] Download HTML Email [e]\n")
+		if m.attView {
+			return fadedTextStyle("Up [↑,k] Down [↓,j] Back [b] Download Attachment [d]\n")
+		} else {
+			return fadedTextStyle("Up [↑,k] Down [↓,j] Back [b] Download HTML Email [d] Attchments [a]\n")
+		}
 	}
 	return fadedTextStyle("Up [↑,k] Down [↓,j] Select [↵] Quit [q] Copy Email Adress [c] New Email Address [n]\n")
 }
@@ -42,6 +46,25 @@ func (m model) listView() string {
 		}
 	}
 	return s
+}
+
+func (m model) attchmentsView() string {
+	s := "\n"
+	if len(m.selected.Content.Attachments) == 0 {
+		return "\n No Attchments to this Email"
+	}
+
+	for i, att := range m.selected.Content.Attachments {
+		cursor := " "
+		if m.cursor == i {
+			cursor = ">"
+		}
+		attDetails := fmt.Sprintf("type: %s size: %d", att.ContentType, att.Size)
+		s += fmt.Sprintf("%s %s\n  %s\n", highlightStyle.Render(cursor), att.FileName, fadedTextStyle(attDetails))
+	}
+
+	return s
+
 }
 
 func (m model) messageContentView() string {

@@ -16,6 +16,7 @@
 - Automic listener to e-mail messages
 - Read e-mails on the terminal
 - Download those e-mail as a html file
+- List and download e-mail attchments
 
 ## Server
 
