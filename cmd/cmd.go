@@ -171,7 +171,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	}
 
-	if m.stopwatch.Elapsed().Seconds() >= 5 && m.selected == nil {
+	if m.stopwatch.Elapsed().Seconds() >= 5 {
 		cmd = m.stopwatch.Reset()
 		cmds = append(cmds, cmd)
 
