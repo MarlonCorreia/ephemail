@@ -107,9 +107,9 @@ func (m *EmailModel) GetMessageContent(msg *Message) error {
 	if err != nil {
 		return err
 	}
-
+	strBody := html2text.HTML2Text(body.Body)
 	msg.Content = body
-	msg.Content.TextBody = html2text.HTML2Text(body.Body)
+	msg.Content.TextBody = strings.ReplaceAll(strBody, "\r\n", "\n")
 
 	return nil
 }
