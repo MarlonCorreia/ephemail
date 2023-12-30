@@ -8,6 +8,7 @@ import (
 	"github.com/MarlonCorreia/ephemail/internal/clipb"
 	email "github.com/MarlonCorreia/ephemail/internal/email"
 	"github.com/MarlonCorreia/ephemail/utils"
+	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/stopwatch"
 	"github.com/charmbracelet/bubbles/viewport"
@@ -25,6 +26,7 @@ type model struct {
 	stopwatch     stopwatch.Model
 	spinner       spinner.Model
 	error         string
+	help          help.Model
 }
 
 func initialModel() model {
@@ -47,6 +49,7 @@ func initialModel() model {
 		spinner:       newSpinner,
 		error:         error,
 		attView:       false,
+		help:          help.New(),
 	}
 }
 
@@ -76,6 +79,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		cmds = append(cmds, cmd)
 
 	case tea.WindowSizeMsg:
+		m.help.Width = msg.Width
+
 		headerHeight := lipgloss.Height(m.headerView())
 		footerHeight := lipgloss.Height(m.footerView())
 		helpHeight := lipgloss.Height(m.helpView())

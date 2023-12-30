@@ -9,14 +9,7 @@ import (
 )
 
 func (m model) helpView() string {
-	if m.selected != nil {
-		if m.attView {
-			return fadedTextStyle("Up [↑,k] Down [↓,j] Back [b] Download Attachment [d]\n")
-		} else {
-			return fadedTextStyle("Up [↑,k] Down [↓,j] Back [b] Download HTML Email [d] Attchments [a]\n")
-		}
-	}
-	return fadedTextStyle("Up [↑,k] Down [↓,j] Select [↵] Quit [q] Copy Email Adress [c] New Email Address [n]\n")
+	return fmt.Sprintf(" %s\n", m.help.View(m.GetKeyMap()))
 }
 
 func (m model) headerView() string {
