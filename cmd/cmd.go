@@ -149,10 +149,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "d":
 			if m.selected != nil {
 				if m.attView {
-					att := m.selected.Content.Attachments[m.cursor]
-					err := m.emailClient.DownloadAttachment(m.selected, att)
-					if err != nil {
-						m.error = downloadAttchmentErr
+					if len(m.selected.Content.Attachments) > m.cursor {
+						att := m.selected.Content.Attachments[m.cursor]
+						err := m.emailClient.DownloadAttachment(m.selected, att)
+						if err != nil {
+							m.error = downloadAttchmentErr
+						}
 					}
 				} else {
 					htmlContent := m.selected.Content.HtmlBody
