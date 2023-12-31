@@ -13,10 +13,10 @@
 ## Features
 
 - Generate random e-mail address
-- Automic listener to e-mail messages
+- Automatic listener to e-mail messages
 - Read e-mails on the terminal
 - Download those e-mail as a html file
-- List and download e-mail attchments
+- List and download e-mail attachments
 
 
 ## Installation
@@ -54,7 +54,7 @@ Instructions on navigation and commands are built in on the TUI, just run
 
 ## Server
 
-This is highly relient on the amazing [💛 1secmailApi](https://www.1secmail.com/api/), so if their service is down, this TUI won't work. I'm currently studying the possibility of writing a companion e-mail server.
+This is highly reliant on the amazing [💛 1secmailApi](https://www.1secmail.com/api/), so if their service is down, this TUI won't work. I'm currently studying the possibility of writing a companion e-mail server.
 
 ## License
 
