@@ -1,6 +1,10 @@
 package utils
 
-import "os"
+import (
+	"os"
+
+	"golang.design/x/clipboard"
+)
 
 func MaxInt(a, b int) int {
 	if a > b {
@@ -29,5 +33,15 @@ func DeleteFile(fileName string) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func SendToClipBoard(msg string) error {
+	err := clipboard.Init()
+	if err != nil {
+		return err
+	}
+
+	clipboard.Write(clipboard.FmtText, []byte(msg))
 	return nil
 }

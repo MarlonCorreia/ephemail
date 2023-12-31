@@ -5,7 +5,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/MarlonCorreia/ephemail/internal/clipb"
 	email "github.com/MarlonCorreia/ephemail/internal/email"
 	"github.com/MarlonCorreia/ephemail/utils"
 	"github.com/charmbracelet/bubbles/help"
@@ -137,7 +136,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 		case "c":
-			err := clipb.SendToClipBoard(m.emailClient.GetEmail())
+			err := utils.SendToClipBoard(m.emailClient.GetEmail())
 			if err != nil {
 				m.error = copyEmailAddressErr
 			} else if m.error == copyEmailAddressErr {
