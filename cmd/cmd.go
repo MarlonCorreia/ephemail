@@ -27,6 +27,7 @@ type model struct {
 	spinner       spinner.Model
 	error         string
 	help          help.Model
+	infoMessage   string
 }
 
 func initialModel() model {
@@ -50,6 +51,7 @@ func initialModel() model {
 		error:         error,
 		attView:       false,
 		help:          help.New(),
+		infoMessage:   "",
 	}
 }
 
@@ -159,6 +161,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 						err := m.emailClient.DownloadAttachment(m.selected, att)
 						if err != nil {
 							m.error = downloadAttchmentErr
+						} else {
+							m.infoMessage = attachmentDownloadedInfo
 						}
 					}
 				} else {
@@ -167,6 +171,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					if err != nil {
 						m.error = writeEmailToFileErr
 					}
+					m.infoMessage = emailDownloadedInfo
 				}
 			}
 
@@ -179,6 +184,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	if m.stopwatch.Elapsed().Seconds() >= 5 {
+		m.infoMessage = ""
 		cmd = m.stopwatch.Reset()
 		cmds = append(cmds, cmd)
 
