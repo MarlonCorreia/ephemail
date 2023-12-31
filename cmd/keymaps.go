@@ -10,6 +10,7 @@ type keyMap struct {
 	Download     key.Binding
 	RefreshEmail key.Binding
 	Attchments   key.Binding
+	Copy         key.Binding
 	Quit         key.Binding
 }
 
@@ -17,6 +18,7 @@ func (k keyMap) ShortHelp() []key.Binding {
 	return []key.Binding{
 		k.Up,
 		k.Down,
+		k.Copy,
 		k.Select,
 		k.Back,
 		k.RefreshEmail,
@@ -30,6 +32,7 @@ func (k keyMap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{{
 		k.Up,
 		k.Down,
+		k.Copy,
 		k.Select,
 		k.Back,
 		k.RefreshEmail,
@@ -80,6 +83,10 @@ func (m model) GetKeyMap() keyMap {
 		keys.RefreshEmail = key.NewBinding(
 			key.WithKeys("n"),
 			key.WithHelp("n", "New Address"),
+		)
+		keys.Copy = key.NewBinding(
+			key.WithKeys("c"),
+			key.WithHelp("c", "Copy Address"),
 		)
 	}
 
