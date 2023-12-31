@@ -89,8 +89,7 @@ func (m *EmailModel) UpdateEmailMessages() error {
 }
 
 func (m *EmailModel) GetMessageContent(msg *Message) error {
-	strId := fmt.Sprint(msg.Id)
-	url := fmt.Sprintf("%s?action=readMessage&login=%s&domain=%s&id=%s", baseEmailAPI, m.User, m.Domain, strId)
+	url := fmt.Sprintf("%s?action=readMessage&login=%s&domain=%s&id=%d", baseEmailAPI, m.User, m.Domain, msg.Id)
 
 	res, err := http.Get(url)
 	if err != nil {
