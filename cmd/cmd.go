@@ -166,7 +166,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					}
 				} else {
 					htmlContent := m.selected.Content.HtmlBody
-					err := utils.WriteFile("email.html", htmlContent)
+					err := utils.WriteFile(fmt.Sprintf("%s.html", m.selected.Subject), []byte(htmlContent))
 					if err != nil {
 						m.error = writeEmailToFileErr
 					}

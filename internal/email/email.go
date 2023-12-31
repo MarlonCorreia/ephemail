@@ -7,7 +7,6 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/MarlonCorreia/ephemail/utils"
@@ -134,17 +133,9 @@ func (m *EmailModel) DownloadAttachment(msg *Message, att Attachment) error {
 		return errors.New("Unable to download file")
 	}
 
-	out, err := os.Create(att.FileName)
-	if err != nil {
-		return err
-	}
-	defer out.Close()
+	content, err := io.ReadAll(res.Body)
+	utils.WriteFile(att.FileName, content)
 
-	_, err = io.Copy(out, res.Body)
-	if err != nil {
-		utils.DeleteFile(att.FileName)
-		return err
-	}
 	return nil
 }
 

@@ -1,7 +1,9 @@
 package utils
 
 import (
+	"fmt"
 	"os"
+	"strings"
 
 	"golang.design/x/clipboard"
 )
@@ -13,14 +15,36 @@ func MaxInt(a, b int) int {
 	return b
 }
 
-func WriteFile(fileName string, content string) error {
-	f, err := os.Create(fileName)
+func safeFileName(filePath string) string {
+	var safeName strings.Builder
+	for _, b := range filePath {
+		if ('a' <= b && b <= 'z') ||
+			('A' <= b && b <= 'Z') ||
+			('0' <= b && b <= '9') {
+			safeName.WriteByte(byte(b))
+		} else if b == ' ' {
+			safeName.WriteByte('_')
+		}
+	}
+	return safeName.String()
+}
+
+func fileNameExtFromPath(filePath string) (string, string) {
+	extIdx := strings.LastIndex(filePath, ".")
+	return filePath[0:extIdx], filePath[extIdx:]
+}
+
+func WriteFile(filePath string, content []byte) error {
+	name, ext := fileNameExtFromPath(filePath)
+	safeFilePath := fmt.Sprintf("%s%s", safeFileName(name), ext)
+
+	f, err := os.Create(safeFilePath)
 	if err != nil {
 		return err
 	}
 	defer f.Close()
 
-	_, err = f.WriteString(content)
+	_, err = f.Write(content)
 	if err != nil {
 		return err
 	}
@@ -28,8 +52,8 @@ func WriteFile(fileName string, content string) error {
 	return nil
 }
 
-func DeleteFile(fileName string) error {
-	err := os.Remove(fileName)
+func DeleteFile(filePath string) error {
+	err := os.Remove(filePath)
 	if err != nil {
 		return err
 	}
