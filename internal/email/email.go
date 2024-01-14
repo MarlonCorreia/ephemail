@@ -171,3 +171,22 @@ func (m *EmailModel) BuildNewEmail() error {
 
 	return nil
 }
+
+func (m *EmailModel) ListEmailDomains() ([]string, error) {
+	url := fmt.Sprintf("%s?action=getDomainList", baseEmailAPI)
+	res, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	bytesBody, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var body []string
+	err = json.Unmarshal(bytesBody, &body)
+	if err != nil {
+		return nil, err
+	}
+	return body, nil
+}
