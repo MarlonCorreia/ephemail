@@ -29,19 +29,19 @@ type model struct {
 	infoMessage   string
 }
 
-func initialModel() model {
+func initialModel(m email.EmailModel) model {
 	error := ""
-	client := email.EmailModel{}
-	err := client.BuildNewEmail()
-	if err != nil {
-		error = newEmailAdressErr
+	if m.GetEmail() == "@" {
+		if err := m.BuildNewEmail(); err != nil {
+			error = newEmailAdressErr
+		}
 	}
 	newSpinner := spinner.New()
 	newSpinner.Spinner = spinner.Line
 	newSpinner.Style = highlightStyle
 
 	return model{
-		emailClient:   client,
+		emailClient:   m,
 		selected:      nil,
 		viewport:      viewport.New(100, 20),
 		viewPortReady: false,
@@ -224,8 +224,14 @@ func (m model) View() string {
 }
 
 func InitCmd() {
+	m := email.EmailModel{}
+	if err := ParseFlags(&m); err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+
 	p := tea.NewProgram(
-		initialModel(),
+		initialModel(m),
 		tea.WithAltScreen(),
 	)
 	if _, err := p.Run(); err != nil {

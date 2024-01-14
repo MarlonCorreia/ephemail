@@ -6,4 +6,6 @@ var (
 	writeEmailToFileErr  = "Unable to write Email to file"
 	copyEmailAddressErr  = "Unable to copy Email address"
 	downloadAttchmentErr = "Unable to download attchment"
+	fetchDomainError     = "Unable to fetch domains"
+	domainUnavailableErr = "Domain Unavailable, check --list-domains"
 )
