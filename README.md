@@ -13,6 +13,7 @@
 ## Features
 
 - Generate random e-mail address
+- Select name and domain address (considering available domains addresses)
 - Automatic listener to e-mail messages
 - Read e-mails on the terminal
 - Download those e-mail as a html file
@@ -49,7 +50,18 @@ Binaries provided on the [Releases](https://github.com/MarlonCorreia/ephemail/re
 Instructions on navigation and commands are built in on the TUI, just run
 
 ```curl
+# Generate random name and domain
 ./ephemail
+```
+
+```curl
+# Provide name and domain
+./ephemail --user <username> --domain <available_domain>
+```
+
+```curl
+# List available domains addresses
+./ephemail --list-domains
 ```
 
 ## Server
